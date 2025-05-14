@@ -140,7 +140,7 @@ def combineFiles(isRegression,fireFile,windFile):
     merged = pd.merge(fireData, wind_Data, on=['lat_rounded', 'lon_rounded', 'time_rounded'], how='inner', suffixes=('_fireFile', '_windFile'))
 
 
-    columns_to_drop = ['Latitude_windFile','Longitude_windFile','date_Time_windFile','lat_rounded','lon_rounded','time_rounded','version', 'instrument', 'satellite', 'date_Time_fireFile',
+    columns_to_drop = ['Latitude_windFile','Longitude_windFile','date_Time_windFile','lat_rounded','lon_rounded','time_rounded','version', 'instrument', 'satellite',
     'State Code', 'County Code', 'Site Num', 'POC', 'Datum',
     'Parameter Name', 'Parameter Code',
     'Method Name', 'Method Code', 'Method Type',
@@ -189,7 +189,7 @@ def main():
         column_to_combine='Date Local',
         column_to_combine_2='Time Local',
         new_column_Name='date_Time',
-        file_Name='/Users/miguelcerna/Desktop/Fire_Predictor_Project/2023/hourly_WIND_2023.csv',
+        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\2020\hourly_WIND_2020.csv',
         state_to_filter='California',
         name_of_state_column='State Name',
         year=2023,
@@ -201,7 +201,7 @@ def main():
         column_to_combine='acq_date',
         column_to_combine_2='acq_time',
         new_column_Name='date_Time',
-        file_Name='/Users/miguelcerna/Desktop/Fire_Predictor_Project/2023/modis_2023_United_States.csv',
+        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\2020\Fire_Data_2020_United_States.csv',
         state_to_filter='',
         name_of_state_column='',
         year=2023,
