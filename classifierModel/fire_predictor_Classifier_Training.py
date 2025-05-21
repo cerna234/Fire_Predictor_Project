@@ -11,7 +11,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.pipeline import Pipeline
 from joblib import dump
 
-dataset = pd.read_csv(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\2020\combinedFiles_classification(20250514_162355)2020.csv')
+dataset = pd.read_csv(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\FinalFiles\combinedFiles_classification(20250521_154706)2018-2021.csv')
 
 dataset['date_Time_fireFile'] = pd.to_datetime(dataset['date_Time_fireFile'])
 

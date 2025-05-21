@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 from joblib import dump
 
 # Load dataset
-dataset = pd.read_csv(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\2020\combinedFiles_regression(20250514_162343)2020.csv')
+dataset = pd.read_csv(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\FinalFiles\combinedFiles_regression(20250521_154700)2018-2021.csv')
 
 dataset['date_Time_fireFile'] = pd.to_datetime(dataset['date_Time_fireFile'])
 dataset['date_Time_fireFile'] = dataset['date_Time_fireFile'].dt.hour

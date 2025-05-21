@@ -7,8 +7,8 @@ from joblib import load
 app = Flask(__name__)
 
 
-regressor = load(r'/Users/miguelcerna/Desktop/Fire_Predictor_Project/fire_prediction_Project_API/Models/fire_predictor_regression_model.joblib')
-classifier = load(r'/Users/miguelcerna/Desktop/Fire_Predictor_Project/fire_prediction_Project_API/Models/fire_predictor_classifier_model.joblib')
+regressor = load(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\fire_prediction_Project_API\Models\fire_predictor_regression_model.joblib')
+classifier = load(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\fire_prediction_Project_API\Models\fire_predictor_regression_model.joblib')
 
 @app.route("/")
 def home():
