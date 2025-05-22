@@ -1,44 +1,19 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask
+from fire_predictor.routes import fire_predictor_bp
+from live_data.routes import live_data_bp
 from joblib import load
-
-
 
 app = Flask(__name__)
 
 
-regressor = load(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\fire_prediction_Project_API\Models\fire_predictor_regression_model.joblib')
-classifier = load(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\fire_prediction_Project_API\Models\fire_predictor_regression_model.joblib')
+
+app.register_blueprint(fire_predictor_bp)
+app.register_blueprint(live_data_bp)
 
 @app.route("/")
 def home():
-    
-    return "up and Running"
+    return "Up and Running"
 
-@app.route("/fire_Predictor_regressor",methods=['GET', 'POST'])
-def fire_predictor_regressor():
-
-    
-    sample = request.get_json()
-    
-    prediction = regressor.predict(sample)
-
-    print(prediction)
-
-    return jsonify(prediction=prediction.tolist())
-
-@app.route("/fire_Predictor_Classifier",methods=['GET', 'POST'])
-def fire_predictor_Classifier():
-    
-    
-    sample = request.get_json()
-    
-    prediction = classifier.predict(sample)
-    
-    print(prediction)
-
-    return jsonify(prediction=prediction.tolist())
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
