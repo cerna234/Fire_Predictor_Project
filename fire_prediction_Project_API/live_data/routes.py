@@ -1,14 +1,19 @@
 #live_data/routes.py
 from flask import Blueprint, request, jsonify
+import csv
+import json
 from joblib import load
 import requests
+import pandas as pd
+import io
+
 live_data_bp= Blueprint('live_data', __name__)
  
 
 api_key = 'bcefad9a65f2489fb2f231456252205'
 
-@live_data_bp.route("/live_wind_data", methods=['POST'])
-def live_wind_data():
+@live_data_bp.route("/live_data", methods=['POST'])
+def live_data():
 
     location = request.get_json()
     url = f'http://api.weatherapi.com/v1/current.json?key={api_key}&q={location}&aqi=no'
@@ -35,24 +40,92 @@ def live_wind_data():
             "gust_mph": current.get('gust_mph')
         }
         
-        extra_info = {
-            "temperature_c": current.get('temp_c'),
-            "temperature_f": current.get('temp_f'),
-            "humidity": current.get('humidity'),
-            "feelslike_c": current.get('feelslike_c'),
-            "feelslike_f": current.get('feelslike_f'),
-            "condition_text": current.get('condition', {}).get('text'),
-            "location_name": location.get('name'),
-            "region": location.get('region'),
-            "country": location.get('country'),
-            "localtime": location.get('localtime')
-        }
+      
 
         result = {
             "wind": wind_info,
-            "weather": extra_info
+            
         }
         
         return jsonify(result)
 
 
+@live_data_bp.route("/future_data", methods=['POST'])
+def future_data():
+
+    location = "Riverside"
+    url = f'http://api.weatherapi.com/v1/future.json?key={api_key}&q={location}&dt=2025-06-22'
+     # Call the external API
+    response = requests.get(url)
+
+    data = response.json()
+
+  
+
+    locationData = data.get('location',{})
+
+    geolocationData = {
+        "lat": locationData.get('lat'),
+        "long": locationData.get('lon')
+    }
+
+    windData = data.get('forecast')
+    windData =  windData.get('forecastday')
+    windData = windData[0]
+    windData = windData.get('day')
+
+    windData = {
+        'wind_sample' : windData.get('maxwind_mph') * 0.868976  #mph -> knots
+    }
+ 
+    
+    result = {
+        "wind": windData,
+        "location": geolocationData
+    }
+
+    
+    
+    return jsonify(result)
+
+
+@live_data_bp.route("/live_Modis_data", methods=['POST'])
+def live_modis_data():
+
+    #west,south,east,northwest,south,east,north
+    coordinates = "-125,24,-66,49"
+    date = '1/2025-05-23'
+    url = f'https://firms.modaps.eosdis.nasa.gov//api/area/csv/e3994c1efe51efb62bb18c25370bc03a/MODIS_NRT/{coordinates}/{date}'
+    
+    response = requests.get(url)
+
+    data = response.text
+
+
+    csv_file = io.StringIO(response.text)
+
+    dataset = pd.read_csv(csv_file)
+
+    random_row = dataset.sample(n=1).iloc[0]
+   
+    data = random_row
+    #brightness	scan	track	bright_t31	frp
+    live_modis_data = {
+    'brightness': data['brightness'],     
+    'scan': data['scan'],                
+    'track': data['track'],               
+    'bright_t31': data['bright_t31'],    
+    'frp': data['frp']                    
+    }
+    
+
+    print(live_modis_data)
+
+  
+
+
+
+
+
+    
+    return live_modis_data
