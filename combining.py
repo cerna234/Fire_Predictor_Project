@@ -140,6 +140,7 @@ def combineFiles(isRegression,fireFile,windFile):
     merged = pd.merge(fireData, wind_Data, on=['lat_rounded', 'lon_rounded', 'time_rounded'], how='inner', suffixes=('_fireFile', '_windFile'))
 
 
+
     columns_to_drop = ['Latitude_windFile','Longitude_windFile','date_Time_windFile','lat_rounded','lon_rounded','time_rounded','version', 'instrument', 'satellite',
     'State Code', 'County Code', 'Site Num', 'POC', 'Datum',
     'Parameter Name', 'Parameter Code',
@@ -150,6 +151,28 @@ def combineFiles(isRegression,fireFile,windFile):
     merged = merged.drop(columns=columns_to_drop)
     filename = ''
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    merged["wind_measurements"] = merged["Sample Measurement"].astype(str) + " " + merged["Units of Measure"]
+
+    print(merged)
+
+    grouped = (
+    merged.groupby(["Latitude_fireFile", "Longitude_fireFile","brightness","scan","track","bright_t31","frp","daynight","type", "date_Time_fireFile","MDL","confidence"])["wind_measurements"]
+    .agg(lambda x: " @ ".join(sorted(x)))
+    .reset_index()
+    )
+
+
+    merged = grouped
+
+    
+    
+
+# Step 4: (Optional) Merge back with original data if needed
+# merged = pd.merge(...)
+
+    
+
     '''
    
     '''
@@ -189,10 +212,10 @@ def main():
         column_to_combine='Date Local',
         column_to_combine_2='Time Local',
         new_column_Name='date_Time',
-        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\2018\hourly_WIND_2018.csv',
+        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\2017\hourly_WIND_2017.csv',
         state_to_filter='California',
         name_of_state_column='State Name',
-        year=2023,
+        year=2017,
         typeOfData='Wind'
     )
  
@@ -201,10 +224,10 @@ def main():
         column_to_combine='acq_date',
         column_to_combine_2='acq_time',
         new_column_Name='date_Time',
-        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\2018\Fire_Data_2018_United_States.csv',
+        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\2017\Fire_Data_2017_United_States.csv',
         state_to_filter='',
         name_of_state_column='',
-        year=2023,
+        year=2017,
         typeOfData='Fire'
     )
     # Convert Fire File
