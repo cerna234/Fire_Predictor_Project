@@ -152,13 +152,21 @@ def combineFiles(isRegression,fireFile,windFile):
     filename = ''
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    merged["wind_measurements"] = merged["Sample Measurement"].astype(str) + " " + merged["Units of Measure"]
 
-    print(merged)
+
+  
+    merged = merged[merged['Units of Measure'] != "Degrees Compass"]
+
+    merged["wind_measurements"] = merged["Sample Measurement"] * 1.15078
+
+
+
+
+
 
     grouped = (
     merged.groupby(["Latitude_fireFile", "Longitude_fireFile","brightness","scan","track","bright_t31","frp","daynight","type", "date_Time_fireFile","MDL","confidence"])["wind_measurements"]
-    .agg(lambda x: " @ ".join(sorted(x)))
+    .agg(lambda x: x.dropna().max())
     .reset_index()
     )
 
@@ -207,15 +215,16 @@ def combineFiles(isRegression,fireFile,windFile):
 
 def main():
         # Convert Wind File
+    year_file = 2021
     WindFileReturnFile =   convertData(
         columns_to_remove=['Date Local', 'Time Local', 'Date GMT', 'Time GMT'],
         column_to_combine='Date Local',
         column_to_combine_2='Time Local',
         new_column_Name='date_Time',
-        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\2017\hourly_WIND_2017.csv',
+        file_Name= fr'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\{year_file}\hourly_WIND_{year_file}.csv',
         state_to_filter='California',
         name_of_state_column='State Name',
-        year=2017,
+        year=year_file,
         typeOfData='Wind'
     )
  
@@ -224,10 +233,10 @@ def main():
         column_to_combine='acq_date',
         column_to_combine_2='acq_time',
         new_column_Name='date_Time',
-        file_Name= r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\2017\Fire_Data_2017_United_States.csv',
+        file_Name= fr'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\{year_file}\Fire_Data_{year_file}_United_States.csv',
         state_to_filter='',
         name_of_state_column='',
-        year=2017,
+        year=year_file,
         typeOfData='Fire'
     )
     # Convert Fire File
