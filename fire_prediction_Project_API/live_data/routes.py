@@ -63,21 +63,45 @@ def live_modis_data_helper(coordinates,date,date_range):
     #coordinates = "-125,24,-66,49"
     #date = '1/2025-05-23'
     #url = f'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e3994c1efe51efb62bb18c25370bc03a/MODIS_NRT/{coordinates}/{date_range}/{date}'
-    url = f'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e3994c1efe51efb62bb18c25370bc03a/MODIS_NRT/{coordinates}/{date_range}/{date}'
-    response = requests.get(url)
+    
+    
+    #url = f'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e3994c1efe51efb62bb18c25370bc03a/MODIS_SP/{coordinates}/{date_range}/{date}'
+    sources = ["MODIS_NRT", "MODIS_SP"]
+    
+ 
+    responseOutput = ""
+    for source in sources:
+        url = f'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e3994c1efe51efb62bb18c25370bc03a/{source}/{coordinates}/{date_range}/{date}'
+        
+        response = requests.get(url)
 
-    data = response.text
+        lines = response.text.strip().splitlines()
 
+        data_lines = [line for line in lines if not line.lower().startswith("latitude")]
+      
 
-    csv_file = io.StringIO(response.text)
+        if len(data_lines) > 0:
+            responseOutput = response.text
+            
+
+        
+    
+        
+       
+            
+
+    csv_file = io.StringIO(responseOutput)
 
     dataset = pd.read_csv(csv_file)
 
 
+    brightest_row = dataset.loc[dataset['brightness'].idxmax()]
 
-    random_row = dataset.sample(n=1).iloc[0]
+ 
+    
+    
    
-    data = random_row
+    data = brightest_row
     #brightness	scan	track	bright_t31	frp
         
     
@@ -93,7 +117,7 @@ def live_modis_data_helper(coordinates,date,date_range):
 
 
 
-    
+    # Need to develop if no data found move on to next Data Source
 
     
  
@@ -123,6 +147,8 @@ def live_location_data(location):
         data = response.json()
 
         data = data.get("location", {})
+
+        print(data)
 
         coordinate_date = {
             "longitude": data.get("lon"),
@@ -166,6 +192,7 @@ def live_modis_data(coordinates,date,date_range):
     data = live_modis_data_helper(coordinates,date,date_range)
 
 
+   
 
     
     return jsonify(data)
@@ -204,6 +231,8 @@ def live_combined_data(location,date,date_range):
     lat = coordinate_data.get("latitude")
     lon = coordinate_data.get("longitude")
 
+    
+
     if lat is None or lon is None:
         return jsonify({"error": "Unable to determine coordinates for the given location."}), 500
 
@@ -213,6 +242,8 @@ def live_combined_data(location,date,date_range):
     west = lon - 1
     east = lon + 1
     coordinates = f"{west},{south},{east},{north}"
+
+   
 
    
     wind_data = live_data_helper(api_key, location)
@@ -229,10 +260,11 @@ def live_combined_data(location,date,date_range):
     combined_data = {
         "weather": wind_data,
         "fireData": modis_data,
-        "coordinates": coordinate_data
+        "coordinates": coordinate_data,
+        "bounding_Box": coordinates
     }
 
-    return combined_data
+    return jsonify(combined_data), 200
 
 
 

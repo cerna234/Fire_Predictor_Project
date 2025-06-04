@@ -10,21 +10,25 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.pipeline import Pipeline
 from joblib import dump
+from datetime import datetime
 
-dataset = pd.read_csv(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\FinalFiles\combinedFiles_classification(20250521_154706)2018-2021.csv')
+dataset = pd.read_csv(r'C:\Users\Miguel Cerna\OneDrive\Desktop\Fire_Predictor_Project\DataFiles\FinalFiles\classification_Final_file.csv')
 
 dataset['date_Time_fireFile'] = pd.to_datetime(dataset['date_Time_fireFile'])
 
 dataset['date_Time_fireFile'] = dataset['date_Time_fireFile'].dt.hour
-print(dataset['date_Time_fireFile'])
+
 
 x = dataset.iloc[:,:-1].values
 
+print(x)
 
 y = dataset.iloc[:,-1].values
 
+
+print(y)
 # Define categorical columns for encoding (by column index or name)
-categorical_features = [7, 9,11]  # Adjust based on your actual dataset
+categorical_features = [7]
 
 
 # Preprocessing transformer
@@ -56,7 +60,19 @@ pipeline.fit(x_train, y_train)
 
 print(pipeline.predict(x_test))
 
-dump(pipeline, 'fire_predictor_pipeline_Classifier.joblib')
+
+
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+filename = f'model_{timestamp}.joblib'
+
+
+'''
+INPUTS
+Latitude_fireFile|Longitude_fireFile|brightness|scan|track|bright_t31|frp|daynight|type|date_Time_fireFile|MDL|wind_measurements|
+
+'''
+dump(pipeline, filename)
+
 
 
 
